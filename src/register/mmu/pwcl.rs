@@ -1,6 +1,6 @@
 use bit_field::BitField;
 
-impl_read_csr!(0x1c,Pwcl);
+impl_read_csr!(0x1c, Pwcl);
 
 impl_define_csr!(Pwcl, "Page Walk Controller for Lower Half Address Space (PWCL)
 
@@ -54,7 +54,6 @@ impl Pwcl {
             _ => panic!("invalid pte_width"),
         }
     }
-
 }
 
 /// Set the start address of the last page table.

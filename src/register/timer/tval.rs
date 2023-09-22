@@ -7,10 +7,10 @@ impl_define_csr!(
      so the length of the TimeVal field in this register will also change."
 );
 
-impl_read_csr!(0x42,Tval);
+impl_read_csr!(0x42, Tval);
 
-impl Tval{
-    pub fn time_val(&self)->usize{
+impl Tval {
+    pub fn time_val(&self) -> usize {
         self.bits
     }
 }

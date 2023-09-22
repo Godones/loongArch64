@@ -1,4 +1,3 @@
-
 use crate::register::CpuMode;
 use bit_field::BitField;
 
@@ -12,7 +11,7 @@ to `PRMD` to restore the processor core to the context when the exception return
 "
 );
 
-impl_read_csr!(0x1,Prmd);
+impl_read_csr!(0x1, Prmd);
 
 impl Prmd {
     /// In case of a non-TLB-refill and non-machine-error exception,
@@ -32,7 +31,6 @@ impl Prmd {
     pub fn pwe(&self) -> bool {
         self.bits.get_bit(3)
     }
-
 }
 
 /// Set the value of this field to the PLV field of `CSR.CRMD` for later return through

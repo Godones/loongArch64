@@ -1,6 +1,6 @@
 use bit_field::BitField;
 
-impl_read_csr!(0x10,TlbIdx);
+impl_read_csr!(0x10, TlbIdx);
 impl_define_csr!(TlbIdx, "TLB Index (TLBIDX)
 
 This register contains information such as the index associated with the TLB-related instruction.
@@ -9,7 +9,6 @@ although LoongArch allows for an Index length of no more than 16 bits.
 
 This register also contains the information related to the PS and P fields in the TLB table entry when executing TLB-related instructions.
 ");
-
 
 impl TlbIdx {
     /// When executing the TLBRD and TLBWR instructions, the index of the access TLB table entry comes from here.
@@ -41,7 +40,6 @@ and 0 means the TLB table entry is non-empty (valid TLB table entry)
     pub fn ne(&self) -> bool {
         self.bits.get_bit(31)
     }
-
 }
 /// See [`TlbIdx::index()`]
 pub fn set_index(index: usize) {

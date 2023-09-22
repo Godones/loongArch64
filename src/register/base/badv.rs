@@ -12,9 +12,7 @@ This register is used to record the bad address when a bad address exception is 
 * Page Non-eXecutable exception (PNX)
 * Page Privilege level Illegal exception (PPI)");
 
-
-
-impl_read_csr!(0x7,Badv);
+impl_read_csr!(0x7, Badv);
 
 impl Badv {
     /// Returns the bad address

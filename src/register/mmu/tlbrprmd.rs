@@ -1,6 +1,6 @@
-use core::fmt::Debug;
-use bit_field::BitField;
 use crate::register::CpuMode;
+use bit_field::BitField;
+use core::fmt::Debug;
 
 impl_define_csr!(
     TlbRPrmd,
@@ -11,7 +11,7 @@ for restoration of the processor core accordingly when the exception returns.
 "
 );
 
-impl_read_csr!(0x8f,TlbRPrmd);
+impl_read_csr!(0x8f, TlbRPrmd);
 impl Debug for TlbRPrmd {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("TLBPrMd")
@@ -40,7 +40,6 @@ impl TlbRPrmd {
     pub fn pwe(&self) -> bool {
         self.bits.get_bit(4)
     }
-
 }
 /// Set the value of this field to the PLV field of `CSR.CRMD` for later return through
 /// `ERTN` instruction  from the exception handler and restoration of PLV.

@@ -1,5 +1,5 @@
 use bit_field::BitField;
-impl_read_csr!(0x1a,Pgdh);
+impl_read_csr!(0x1a, Pgdh);
 
 impl_define_csr!(Pgdh, "Page Global Directory Base Address for Higher Half Address Space\n\
                         This register is used to configure the base address of the global directory for the lower half address space.\n\
@@ -23,8 +23,6 @@ pub fn set_base(val: usize) {
     assert_eq!(val & 0xFFF, 0);
     set_csr_loong_bits!(0x1a, 0.., val);
 }
-
-
 
 impl core::fmt::Debug for Pgdh {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {

@@ -1,5 +1,5 @@
-use core::fmt::Debug;
 use bit_field::BitField;
+use core::fmt::Debug;
 
 impl_define_csr!(Tcfg, "Timer Configuration\n\
                         This register is the interface to the software configuration timer.\n\
@@ -16,7 +16,6 @@ impl Debug for Tcfg {
             .finish()
     }
 }
-
 
 impl Tcfg {
     /// Timer enable bit.
@@ -42,7 +41,6 @@ impl Tcfg {
     pub fn init_val(&self) -> usize {
         (self.bits >> 2) << 2
     }
-
 }
 /// Only when this bit is 1,
 /// the timer will perform countdown self decrement and set up the timing interrupt signal when it decrements to 0 value.

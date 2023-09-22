@@ -1,6 +1,5 @@
-
 use core::fmt::Debug;
-impl_read_csr!(0x89,TlbRBadv);
+impl_read_csr!(0x89, TlbRBadv);
 impl_define_csr!(
     TlbRBadv,
     "TLB Refill Exception Bad Virtual Address (TLBRBADV)
@@ -31,5 +30,5 @@ impl TlbRBadv {
 /// then the high 32 bits of the recorded virtual address will be set to 0.
 
 pub fn set_vaddr(value: usize) {
-    write_csr_loong!(0x89,value);
+    write_csr_loong!(0x89, value);
 }

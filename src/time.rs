@@ -1,5 +1,5 @@
-use core::arch::asm;
 use crate::cpu::CPUCFG;
+use core::arch::asm;
 
 pub struct Time {}
 

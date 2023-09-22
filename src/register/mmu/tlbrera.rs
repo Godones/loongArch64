@@ -1,10 +1,10 @@
-use core::fmt::Debug;
 use bit_field::BitField;
+use core::fmt::Debug;
 impl_define_csr!(TlbREra,"TLB Refill Exception Return Address,\n\
                           This register is used to record the PC of the instruction that triggered the TLB refill exception.\n\
                           In addition, this register contains flag bits to identify the current exception as a TLB refill exception.");
 
-impl_read_csr!(0x8a,TlbREra);
+impl_read_csr!(0x8a, TlbREra);
 
 impl TlbREra {
     /// Record the [GRLEN-1:2] bits of the PC of the instruction that triggered the TLB refill exception.
@@ -48,4 +48,3 @@ pub fn set_is_tlbr(is_tlbr: bool) {
 pub fn set_pc(pc: usize) {
     set_csr_loong_bits!(0x8a, 2.., pc);
 }
-

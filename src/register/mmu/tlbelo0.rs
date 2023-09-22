@@ -1,9 +1,9 @@
-use core::fmt;
-use bit_field::BitField;
-use crate::PALEN;
 use crate::register::MemoryAccessType;
+use crate::PALEN;
+use bit_field::BitField;
+use core::fmt;
 
-impl_read_csr!(0x12,TlbElo0);
+impl_read_csr!(0x12, TlbElo0);
 impl_define_csr!(TlbElo0, "TLB Entry Low-order Bits
 n
 TLBELO0 and TLBELO1 registers contain the information related to the physical page number of the low-order bits of the TLB table entry during executing TLB-related instructions.

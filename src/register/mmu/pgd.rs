@@ -1,10 +1,9 @@
-
 impl_define_csr!(Pgd, " Page Global Directory Base Address (PGD)
 This register is a read-only register.
 Store global directory base address information corresponding to the bad virtual address in the current context.
 ");
 
-impl_read_csr!(0x1b,Pgd);
+impl_read_csr!(0x1b, Pgd);
 
 impl Pgd {
     /// If the highest bit of the bad virtual address(`BadV`) in the current context is 0:

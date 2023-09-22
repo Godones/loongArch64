@@ -1,13 +1,12 @@
 #[macro_use]
 mod macros;
-mod timer;
-mod mmu;
 mod base;
+mod mmu;
 mod ras;
+mod timer;
 
-
-use core::fmt::{Display, Formatter};
 pub use base::*;
+use core::fmt::{Display, Formatter};
 pub use mmu::*;
 pub use timer::*;
 
@@ -17,12 +16,12 @@ pub enum MemoryAccessType {
     CoherentCached = 1,
     WeaklyOrderedUnCached = 2,
 }
-impl Display for MemoryAccessType{
+impl Display for MemoryAccessType {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
-            MemoryAccessType::StronglyOrderedUnCached => write!(f,"StronglyOrderedUnCached"),
-            MemoryAccessType::CoherentCached => write!(f,"CoherentCached"),
-            MemoryAccessType::WeaklyOrderedUnCached => write!(f,"WeaklyOrderedUnCached"),
+            MemoryAccessType::StronglyOrderedUnCached => write!(f, "StronglyOrderedUnCached"),
+            MemoryAccessType::CoherentCached => write!(f, "CoherentCached"),
+            MemoryAccessType::WeaklyOrderedUnCached => write!(f, "WeaklyOrderedUnCached"),
         }
     }
 }
@@ -38,7 +37,7 @@ impl From<usize> for MemoryAccessType {
 }
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum CpuMode{
+pub enum CpuMode {
     Ring0 = 0,
     Ring1 = 1,
     Ring2 = 2,

@@ -1,9 +1,8 @@
-
 use bit_field::BitField;
 
 impl_define_csr!(Prcfg3, "Privileged Resource Configuration 1");
 
-impl_read_csr!(0x23,Prcfg3);
+impl_read_csr!(0x23, Prcfg3);
 
 impl Prcfg3 {
     /// 指示 TLB 组织方式：
@@ -31,4 +30,3 @@ impl Prcfg3 {
         self.bits.get_bits(20..=25)
     }
 }
-

@@ -1,7 +1,7 @@
-use bit_field::BitField;
-use crate::register::{ecfg, tlbrera};
 use crate::register::ras::merrctl;
-use crate::register::ras::merrctl::{MachineError};
+use crate::register::ras::merrctl::MachineError;
+use crate::register::{ecfg, tlbrera};
+use bit_field::BitField;
 
 impl_define_csr!(
     Estat,
@@ -10,11 +10,11 @@ including the first(`Ecode`) and second level(`EsubCode`) encoding of the trigge
 and the status of each interrupt."
 );
 
-impl_read_csr!(0x5,Estat);
+impl_read_csr!(0x5, Estat);
 
 impl Estat {
     /// Returns the local interrupt status
-    pub fn is(&self)->usize{
+    pub fn is(&self) -> usize {
         self.bits.get_bits(0..=12)
     }
     /// Returns the first level encoding of the triggered exceptions.
@@ -36,7 +36,7 @@ impl Estat {
         let is_tlb_reload = tlbrera::read().is_tlbr();
         if is_tlb_reload {
             return Trap::Exception(Exception::TLBRFill);
-        }else if merrctl::read().is_merr() {
+        } else if merrctl::read().is_merr() {
             return Trap::MachineError(MachineError::CacheCheckError);
         }
         let ecode = self.ecode();
@@ -89,15 +89,15 @@ pub enum Exception {
     /// This exception is triggered when the virtual address of a STORE(i.e. `st.{b,h,w,d}`) operation finds a match in the TLB with `V=0`
     StorePageFault,
     /// This exception is triggered when the virtual address of an instruction fetching  operation finds a match in the TLB with `V=0`.
-    FetchPageFault  ,
+    FetchPageFault,
     /// the virtual address of a store operation matches a TLB entry with `V=1`, `D=0` and a permitted privilege.
-    PageModifyFault ,
+    PageModifyFault,
     /// the virtual address of a load operation matches a TLB entry with `V=1`, `NR=1` and a permitted privilege.
-    PageNonReadableFault ,
+    PageNonReadableFault,
     /// the virtual address of a fetch operation matches a TLB entry with `V=1`, `NX=1` and a permitted privilege.
-    PageNonExecutableFault ,
+    PageNonExecutableFault,
     /// The page privilege level is illegal.
-    PagePrivilegeIllegal ,
+    PagePrivilegeIllegal,
     /// This exception is triggered when the virtual address of an instruction fetching operation is illegal.
     FetchInstructionAddressError,
     /// This exception is triggered when the virtual address of a load or store operation is illegal.
@@ -147,7 +147,6 @@ pub enum Interrupt {
     IPI,
 }
 
-
 impl Interrupt {
     pub fn from_usize(value: usize) -> Self {
         match value {
@@ -181,6 +180,6 @@ pub enum Trap {
 ///
 /// # Warning!
 /// The index of software interrupt is 0 and 1.
-pub fn set_sw(index: usize,value:bool) {
-    set_csr_loong_bit!(0x5,index,value);
+pub fn set_sw(index: usize, value: bool) {
+    set_csr_loong_bit!(0x5, index, value);
 }

@@ -1,6 +1,6 @@
-use bit_field::BitField;
 use crate::VALEN;
-impl_read_csr!(0x11,TlbEhi);
+use bit_field::BitField;
+impl_read_csr!(0x11, TlbEhi);
 impl_define_csr!(TlbEhi, "TLB Entry High-order Bits (TLBEHI)
 
 This register contains the information related to the VPN of the high-order bits of the TLB table entry for TLB-related instructions.
@@ -21,7 +21,6 @@ impl TlbEhi {
     pub fn vppn(&self) -> usize {
         self.bits.get_bits(13..VALEN)
     }
-
 }
 #[doc = "* When executing the `TLBRD` instruction, the value of the `VPPN` field read from the `TLB` table entry is recorded here.
 

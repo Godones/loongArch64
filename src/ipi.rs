@@ -2,24 +2,24 @@ use crate::consts::*;
 use bit_field::BitField;
 use core::arch::asm;
 
- fn iocsr_write_u32(addr: usize, value: u32) {
+fn iocsr_write_u32(addr: usize, value: u32) {
     unsafe {
         asm!("iocsrwr.w {},{}", in(reg) value,in(reg) addr);
     }
 }
- fn iocsr_read_u32(addr: usize) -> u32 {
+fn iocsr_read_u32(addr: usize) -> u32 {
     let mut value: u32;
     unsafe {
         asm!("iocsrrd.w {},{}", out(reg) value, in(reg) addr);
     }
     value
 }
- fn iocsr_write_u64(addr: usize, value: u64) {
+fn iocsr_write_u64(addr: usize, value: u64) {
     unsafe {
         asm!("iocsrwr.d {},{}", in(reg) value, in(reg) addr);
     }
 }
- fn iocsr_read_u64(addr: usize) -> u64 {
+fn iocsr_read_u64(addr: usize) -> u64 {
     let mut value: u64;
     unsafe {
         asm!("iocsrrd.d {},{}", out(reg) value, in(reg) addr);

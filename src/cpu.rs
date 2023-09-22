@@ -1,5 +1,5 @@
-use core::arch::asm;
 use bit_field::BitField;
+use core::arch::asm;
 pub struct CPUCFG {
     bits: usize,
 }
@@ -47,7 +47,6 @@ pub fn get_mmu_support_page() -> bool {
     cfg.get_bit(2)
 }
 
-
 pub fn get_support_iocsr() -> bool {
     let cfg = CPUCFG::read(1);
     cfg.get_bit(3)
@@ -87,4 +86,3 @@ pub fn get_support_lspw() -> bool {
     let cfg = CPUCFG::read(2);
     cfg.get_bit(21)
 }
-

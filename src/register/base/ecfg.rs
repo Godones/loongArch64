@@ -4,7 +4,7 @@ use bitflags::bitflags;
 impl_define_csr!(Ecfg,"Exception Configuration (ECFG)
 This register is used to control the entry calculation method of exceptions and interrupts and the local enable bit of each interrupt.");
 
-impl_read_csr!(0x4,Ecfg);
+impl_read_csr!(0x4, Ecfg);
 bitflags! {
     pub struct LineBasedInterrupt:usize {
         ///Software Interrupt 0
@@ -53,9 +53,9 @@ impl Ecfg {
 }
 
 pub fn set_vs(vs: usize) {
-    set_csr_loong_bits!(0x4,16..19,vs);
+    set_csr_loong_bits!(0x4, 16..19, vs);
 }
 
 pub fn set_lie(lie: LineBasedInterrupt) {
-    set_csr_loong_bits!(0x4,0..13,lie.bits());
+    set_csr_loong_bits!(0x4, 0..13, lie.bits());
 }

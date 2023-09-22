@@ -1,8 +1,7 @@
-use core::fmt::Debug;
 use bit_field::BitField;
+use core::fmt::Debug;
 impl_define_csr!(Prcfg1, "Privileged Resource Configuration 1");
-impl_read_csr!(0x21,Prcfg1);
-
+impl_read_csr!(0x21, Prcfg1);
 
 impl Prcfg1 {
     /// The number of SAVE control and status registers.
@@ -23,10 +22,7 @@ impl Debug for Prcfg1 {
         f.debug_struct("PRCfg1")
             .field("SAVE reg. number", &self.save_num())
             .field("Timer bits", &self.timer_bits())
-            .field(
-                "max vector entry spacing",
-                &self.vs_max(),
-            )
+            .field("max vector entry spacing", &self.vs_max())
             .finish()
     }
 }

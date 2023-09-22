@@ -1,8 +1,7 @@
-use bit_field::BitField;
-use crate::PALEN;
 use crate::register::MemoryAccessType;
-impl_read_csr!(0x8d,TlbRElo1);
-
+use crate::PALEN;
+use bit_field::BitField;
+impl_read_csr!(0x8d, TlbRElo1);
 
 impl_define_csr!(TlbRElo1,"TLB Refill Exception Entry Low-order Bits (TLBRELO0, TLBRELO1)
 

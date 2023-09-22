@@ -6,15 +6,14 @@ impl_define_csr!(MerrSave, "Machine Error Exception Data Save Register\n\
                             and its potential of interrupting in the processing of any other exception handling.\n\
                             You can simply consider this as yet another scratch register.");
 
-impl_read_csr!(0x95,MerrSave);
+impl_read_csr!(0x95, MerrSave);
 
-impl MerrSave{
-    pub fn data(&self)->usize{
+impl MerrSave {
+    pub fn data(&self) -> usize {
         self.bits
     }
 }
 
-
 pub fn set_data(value: usize) {
-    write_csr_loong!(0x95,value);
+    write_csr_loong!(0x95, value);
 }

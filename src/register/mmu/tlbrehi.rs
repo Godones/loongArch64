@@ -1,8 +1,8 @@
-use core::fmt::Debug;
-use bit_field::BitField;
 use crate::VALEN;
+use bit_field::BitField;
+use core::fmt::Debug;
 
-impl_read_csr!(0x8e,TlbREhi);
+impl_read_csr!(0x8e, TlbREhi);
 impl_define_csr!(TlbREhi,"
 When in the TLB refill exception context (`CSR.TLBRERA.IsTLBR`=1),
 the `TLBREHI` register stores the information related to the physical page number of the low-order bits of the TLB table entry,
@@ -41,7 +41,6 @@ impl TlbREhi {
     pub fn vppn(&self) -> usize {
         self.bits.get_bits(13..VALEN)
     }
-
 }
 
 /// Set the page size used by `TLBWR` & `TLBFILL` when `CSR.TLBRERA.IsTLBR`=1.

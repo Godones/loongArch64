@@ -1,5 +1,4 @@
-
-impl_read_csr!(0x88,TlbREntry);
+impl_read_csr!(0x88, TlbREntry);
 impl_define_csr!(
     TlbREntry,
     " TLB Refill Exception Entry Base Address (TLBRENTRY)
@@ -22,5 +21,5 @@ impl TlbREntry {
 
 pub fn set_tlbrentry(addr: usize) {
     assert_eq!(addr & 0xFFF, 0);
-    write_csr_loong!(0x88,addr);
+    write_csr_loong!(0x88, addr);
 }

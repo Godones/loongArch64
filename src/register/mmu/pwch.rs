@@ -1,6 +1,6 @@
-use core::fmt::Debug;
 use bit_field::BitField;
-impl_read_csr!(0x1d,Pwch);
+use core::fmt::Debug;
+impl_read_csr!(0x1d, Pwch);
 impl_define_csr!(Pwch, "Page Walk Controller for Higher Half Address Space (PWCH)
 This register and the information in the `CSR.PWCL` register together define the page table structure used in the operating system.
 This information will be used to instruct software or hardware to perform page table walking.
@@ -27,7 +27,6 @@ impl Pwch {
     pub fn dir4_width(&self) -> usize {
         self.bits.get_bits(18..=23)
     }
-
 }
 /// Set the starting address of the level 3 directory.
 pub fn set_dir3_base(val: usize) {
