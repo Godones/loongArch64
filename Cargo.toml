@@ -1,5 +1,5 @@
 [package]
-name = "loongArch64"
+name = "loongarch64"
 version = "0.1.0"
 edition = "2021"
 description = "loongArch64 support for Rust"
