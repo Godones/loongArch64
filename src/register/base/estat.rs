@@ -1,31 +1,32 @@
 use bit_field::BitField;
 use crate::register::{ecfg, tlbrera};
+use crate::register::ras::merrctl;
+use crate::register::ras::merrctl::{MachineError};
 
+impl_define_csr!(
+    Estat,
+    "Record the status information of the exceptions,
+including the first(`Ecode`) and second level(`EsubCode`) encoding of the triggered exceptions,
+and the status of each interrupt."
+);
 
-impl_define_csr!(Estat);
 impl_read_csr!(0x5,Estat);
-impl_write_csr!(0x5,Estat);
 
 impl Estat {
-    pub fn interrupt_with_index(&self, index: usize) -> bool {
-        // 0-12位为中断
-        assert!(index < 13);
-        self.bits.get_bit(index)
+    /// Returns the local interrupt status
+    pub fn is(&self)->usize{
+        self.bits.get_bits(0..=12)
     }
-    // 只有写0和1位有效，这两位控制软件中断
-    pub fn set_interrupt_with_index(&mut self, index: usize, value: bool) -> &mut Self {
-        assert!(index < 2);
-        self.bits.set_bit(index, value);
-        self
-    }
-    // 例外类型一级编码。触发例外时：
-    // 如果是 TLB 重填例外或机器错误例外，该域保持不变；
-    // 否则，硬件会根据例外类型将表 7- 8 中 Ecode 栏定义的数值写入该域。
-    //例外类型一级编号 21-16位
+    /// Returns the first level encoding of the triggered exceptions.
+    ///
+    /// When it is a TLB reload exception or a machine error exception,
+    /// this field remains unchanged; otherwise, the hardware will write
+    /// the value defined in the Ecode column in Table 7-8 to this field according to the exception type.
     pub fn ecode(&self) -> usize {
         self.bits.get_bits(16..=21)
     }
-    //例外类型二级编号 22-30位
+
+    /// Returns the second level encoding of the triggered exceptions.
     pub fn esubcode(&self) -> usize {
         self.bits.get_bits(22..=30)
     }
@@ -35,6 +36,8 @@ impl Estat {
         let is_tlb_reload = tlbrera::read().is_tlbr();
         if is_tlb_reload {
             return Trap::Exception(Exception::TLBRFill);
+        }else if merrctl::read().is_merr() {
+            return Trap::MachineError(MachineError::CacheCheckError);
         }
         let ecode = self.ecode();
         if ecode == 0 {
@@ -42,8 +45,9 @@ impl Estat {
             let ecfg_vs = ecfg::read().vs();
             if ecfg_vs == 0 {
                 // 读取中断位
+                let ie = self.is();
                 for index in (0..13).rev() {
-                    if self.interrupt_with_index(index) {
+                    if ie.get_bit(index) {
                         return Trap::Interrupt(Interrupt::from_usize(index));
                     }
                 }
@@ -56,13 +60,13 @@ impl Estat {
             0x2 => Trap::Exception(Exception::StorePageFault), // store
             0x3 => Trap::Exception(Exception::FetchPageFault), //取指操作页面不存在
             0x4 => Trap::Exception(Exception::PageModifyFault), //页修改例外
-            0x5 => Trap::Exception(Exception::PageNotReadFault), //页不可读
-            0x6 => Trap::Exception(Exception::PageNotExecuteFault), //页不可执行
+            0x5 => Trap::Exception(Exception::PageNonReadableFault), //页不可读
+            0x6 => Trap::Exception(Exception::PageNonExecutableFault), //页不可执行
             0x7 => Trap::Exception(Exception::PagePrivilegeIllegal), //页特权级不合规
             0x8 => {
                 match sub_ecode {
                     0x1 => Trap::Exception(Exception::FetchInstructionAddressError), //取指地址错误
-                    0x2 => Trap::Exception(Exception::MemoryAccessError), //访存地址访问错误
+                    0x2 => Trap::Exception(Exception::MemoryAccessAddressError), //访存地址访问错误
                     _ => Trap::Unknown,
                 }
             }
@@ -78,45 +82,71 @@ impl Estat {
     }
 }
 
-// 异常类型
 #[derive(Debug, Clone, Copy)]
 pub enum Exception {
+    /// This exception is triggered when the virtual address of a LOAD(i.e. `ld.{b,h,w,d}`) operation finds a match in the TLB with `V=0`.
     LoadPageFault,
+    /// This exception is triggered when the virtual address of a STORE(i.e. `st.{b,h,w,d}`) operation finds a match in the TLB with `V=0`
     StorePageFault,
-    FetchPageFault,
-    PageModifyFault,
-    PageNotReadFault,
-    PageNotExecuteFault,
-    PagePrivilegeIllegal,
+    /// This exception is triggered when the virtual address of an instruction fetching  operation finds a match in the TLB with `V=0`.
+    FetchPageFault  ,
+    /// the virtual address of a store operation matches a TLB entry with `V=1`, `D=0` and a permitted privilege.
+    PageModifyFault ,
+    /// the virtual address of a load operation matches a TLB entry with `V=1`, `NR=1` and a permitted privilege.
+    PageNonReadableFault ,
+    /// the virtual address of a fetch operation matches a TLB entry with `V=1`, `NX=1` and a permitted privilege.
+    PageNonExecutableFault ,
+    /// The page privilege level is illegal.
+    PagePrivilegeIllegal ,
+    /// This exception is triggered when the virtual address of an instruction fetching operation is illegal.
     FetchInstructionAddressError,
-    MemoryAccessError,                 //内存访问错误
-    AddressNotAligned,                 //地址不对齐
-    BoundsCheckFault,                  //越界检查错误
-    Syscall = 0xB,                     //系统调用
-    Breakpoint = 0xC,                  //调试中断
-    InstructionNotExist = 0xD,         //指令不合规
-    InstructionPrivilegeIllegal = 0xE, //特权指令不合规
-    FloatingPointUnavailable = 0xF,    //浮点不可用
-    TLBRFill,                          //TLB重填
+    /// This exception is triggered when the virtual address of a load or store operation is illegal.
+    MemoryAccessAddressError,
+    /// This exception is triggered when the virtual address of a load or store operation is not aligned.
+    AddressNotAligned,
+    BoundsCheckFault,
+    /// system call
+    Syscall = 0xB,
+    /// debug breakpoint
+    Breakpoint = 0xC,
+    InstructionNotExist = 0xD,
+    InstructionPrivilegeIllegal = 0xE,
+    FloatingPointUnavailable = 0xF,
+    TLBRFill,
 }
 
-// 中断类型
+/// The interrupt type.
 #[derive(Debug, Clone, Copy)]
+#[repr(usize)]
 pub enum Interrupt {
-    SWI0,  //软件中断0
-    SWI1,  //软件中断1
-    HWI0,  //硬件中断0
-    HWI1,  //硬件中断1
-    HWI2,  //硬件中断2
-    HWI3,  //硬件中断3
-    HWI4,  //硬件中断4
-    HWI5,  //硬件中断5
-    HWI6,  //硬件中断6
-    HWI7,  //硬件中断7
-    PMI,   //性能监测计数溢出中断
-    Timer, //定时器中断
-    IPI,   //多处理器间的中断
+    ///Software Interrupt 0
+    SWI0 = 0,
+    ///Software Interrupt 1
+    SWI1,
+    ///Hardware Interrupt 0
+    HWI0,
+    ///Hardware Interrupt 1
+    HWI1,
+    ///Hardware Interrupt 2
+    HWI2,
+    ///Hardware Interrupt 3
+    HWI3,
+    ///Hardware Interrupt 4
+    HWI4,
+    ///Hardware Interrupt 5
+    HWI5,
+    ///Hardware Interrupt 6
+    HWI6,
+    ///Hardware Interrupt 7
+    HWI7,
+    ///Performance Monitor Counter Overflow Interrupt
+    PMI,
+    ///Timer Interrupt
+    Timer,
+    ///Inter-Processor Interrupt
+    IPI,
 }
+
 
 impl Interrupt {
     pub fn from_usize(value: usize) -> Self {
@@ -143,5 +173,14 @@ impl Interrupt {
 pub enum Trap {
     Exception(Exception),
     Interrupt(Interrupt),
+    MachineError(MachineError),
     Unknown,
+}
+
+/// Set the software interrupt enable bit.
+///
+/// # Warning!
+/// The index of software interrupt is 0 and 1.
+pub fn set_sw(index: usize,value:bool) {
+    set_csr_loong_bit!(0x5,index,value);
 }

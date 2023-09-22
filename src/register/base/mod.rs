@@ -1,8 +1,5 @@
-#![allow(unused)]
-
 
 pub mod crmd;
-pub mod common;
 pub mod prmd;
 pub mod euen;
 pub mod misc;
@@ -20,7 +17,5 @@ pub mod prcfg3;
 pub mod llbctl;
 
 
-#[macro_use]
-pub mod macros;
 
-pub use common::CpuMode;
+

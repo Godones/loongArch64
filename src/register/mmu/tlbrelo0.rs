@@ -1,91 +1,39 @@
 use bit_field::BitField;
+use crate::register::MemoryAccessType;
 use crate::PALEN;
-use crate::register::mmu::tlbelo::TLBEL;
-impl_define_csr!(TlbRElo0);
 impl_read_csr!(0x8c,TlbRElo0);
-impl_write_csr!(0x8c,TlbRElo0);
 
+impl_define_csr!(TlbRElo0,"TLB Refill Exception Entry Low-order Bits (TLBRELO0, TLBRELO1)
 
-impl TLBEL for TlbRElo0 {
-    // 页表项的有效位（V）
-    fn valid(&self) -> bool {
-        self.bits.get_bit(0)
-    }
+The TLBRELO registers store the low-order bits of PPN-related information in the TLB table entry,
+during executing TLB-related instructions
+(when the TLB refill exception context CSR.TLBRERA.IsTLBR=1).
 
-    fn set_valid(&mut self, valid: bool) -> &mut Self {
-        self.bits.set_bit(0, valid);
-        self
-    }
+The format of TLBRELO registers and the meaning of each field are the same as TLBELO registers.
 
-    fn dirty(&self) -> bool {
-        self.bits.get_bit(1)
-    }
+However, the TLBRELO registers are not an exact copy of the TLBELO registers,
+in the case of CSR.TLBRERA.IsTLBR=1. This is reflected in two points:
 
-    fn set_dirty(&mut self, dirty: bool) -> &mut Self {
-        self.bits.set_bit(1, dirty);
-        self
-    }
+* Regardless of the value of CSR.TLBRERA.IsTLBR, the TLBRD instruction updates only the TLBELO0/TLBELO1 registers.
 
-    fn plv(&self) -> usize {
-        self.bits.get_bits(2..=3)
-    }
+* Regardless of the value of CSR.TLBRERA.IsTLBR, the LDPTE instruction updates only the TLBRELO0/TLBRELO1 registers.
+");
 
-    fn set_plv(&mut self, plv: usize) -> &mut Self {
-        self.bits.set_bits(2..=3, plv);
-        self
-    }
+impl_tlbelo!(TlbRElo0, 0x8c);
 
-    fn mat(&self) -> usize {
-        self.bits.get_bits(4..=5)
-    }
-
-    fn set_mat(&mut self, mem_access_type: usize) -> &mut Self {
-        self.bits.set_bits(4..=5, mem_access_type);
-        self
-    }
-
-    fn global(&self) -> bool {
-        self.bits.get_bit(6)
-    }
-
-    fn set_global(&mut self, global_flag: bool) -> &mut Self {
-        self.bits.set_bit(6, global_flag);
-        self
-    }
-
-    fn ppn(&self) -> usize {
-        self.bits.get_bits(14..PALEN)
-    }
-
-    fn set_ppn(&mut self, palen: usize, ppn: usize) -> &mut Self {
-        self.bits.set_bits(14..palen, ppn);
-        self
-    }
-
-    fn not_readable(&self) -> bool {
-        self.bits.get_bit(61)
-    }
-
-    fn set_not_readable(&mut self, not_readable: bool) -> &mut Self {
-        self.bits.set_bit(61, not_readable);
-        self
-    }
-
-    fn not_executable(&self) -> bool {
-        self.bits.get_bit(62)
-    }
-
-    fn set_not_executable(&mut self, not_executable: bool) -> &mut Self {
-        self.bits.set_bit(62, not_executable);
-        self
-    }
-
-    fn rplv(&self) -> bool {
-        self.bits.get_bit(63)
-    }
-
-    fn set_rplv(&mut self, rplv: bool) -> &mut Self {
-        self.bits.set_bit(63, rplv);
-        self
+impl core::fmt::Debug for TlbRElo0 {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("TLBRELo0")
+            .field("bits", &self.bits)
+            .field("valid", &self.valid())
+            .field("MAT", &self.mat())
+            .field("NR", &self.not_readable())
+            .field("NX", &self.not_executable())
+            .field("ppn", &self.ppn())
+            .field("dirty", &self.dirty())
+            .field("rplv", &self.rplv())
+            .field("global", &self.global())
+            .field("plv", &self.plv())
+            .finish()
     }
 }

@@ -1,41 +1,59 @@
 use bit_field::BitField;
-impl_define_csr!(TlbIdx);
+
 impl_read_csr!(0x10,TlbIdx);
-impl_write_csr!(0x10,TlbIdx);
+impl_define_csr!(TlbIdx, "TLB Index (TLBIDX)
+
+This register contains information such as the index associated with the TLB-related instruction.
+The length of the Index field in the table depends on implementation,
+although LoongArch allows for an Index length of no more than 16 bits.
+
+This register also contains the information related to the PS and P fields in the TLB table entry when executing TLB-related instructions.
+");
 
 
 impl TlbIdx {
-    // 执行 TLBRD 和 TLBWR 指令时，访问 TLB 表项的索引值来自于此。
-    // 执行 TLBSRCH 指令时，如果命中，则命中项的索引值记录到这里
+    /// When executing the TLBRD and TLBWR instructions, the index of the access TLB table entry comes from here.
+    ///
+    /// When executing the TLBSRCH instruction, if it hits, the index of the hit entry is recorded here.
+    ///
+    /// For the correspondence between index values and TLB table entries, refer to the relevant section in TLB Maintenance Instructions.
     pub fn index(&self) -> usize {
         self.bits.get_bits(0..16)
     }
-    pub fn set_index(&mut self, index: usize) -> &mut Self {
-        self.bits.set_bits(0..16, index);
-        self
-    }
-    // 执行 TLBRD 指令时，所读取 TLB 表项的 PS 域的值记录到这里。
-    // 在 CSR.TLBRERA.IsTLBR=0 时，执行 TLBWR 和 TLBFILL 指令，写入的 TLB 表项的 PS
-    // 域的值来自于此。
+    /// When executing the TLBRD instruction, the value read from the PS field of the TLB table entry is recorded here.
+    /// When executing the TLBWR and TLBFILL instructions with `CSR.TLBRERA.IsTLBR=0`,
+    /// the value written to the PS field of the TLB table entry comes from here.
     pub fn ps(&self) -> usize {
         self.bits.get_bits(24..=29)
     }
-    pub fn set_ps(&mut self, ps: usize) -> &mut Self {
-        self.bits.set_bits(24..=29, ps);
-        self
-    }
-    // 该位为 1 表示该 TLB 表项为空（无效 TLB 表项），为 0 表示该 TLB 表项非空（有效 TLB
-    // 表项）。
-    // 执行 TLBSRCH 时，如果有命中项该位记为 0，否则该位记为 1。
-    // 执行 TLBRD 时，所读取 TLB 表项的 E 位信息取反后记录到这里。
-    // 执行 TLBWR 或 TLBFILL 指令时，若 CSR.TLBRERA.IsTLBR=0，将该位的值取反后写入
-    // 到被写 TLB 项的 E 位；若此时 CSR.TLBRERA.IsTLBR=1，那么被写入的 TLB 项的 E 位
-    // 总是置为 1，与该位的值无关
+
+    #[doc = "1 means the TLB table entry is empty (invalid TLB table entry),
+and 0 means the TLB table entry is non-empty (valid TLB table entry)
+
+* When executing the TLBSRCH instruction, this bit is recorded as 0 if there is a hit entry, otherwise it is recorded as 1.
+
+* When executing the TLBRD instruction, the E bit read from the TLB table entry is inverted and recorded here.
+
+* When executing the TLBWR instruction, then
+  * If `CSR.TLBRFPC.IsTLBR`=0, the value written to the E bit of the TLB entry is written after it is inverted.
+  * else, if `CSR.TLBRERA.IsTLBR`=1, then the E bit of the TLB entry being written is always set to 1, regardless of the value of that bit."]
+
     pub fn ne(&self) -> bool {
         self.bits.get_bit(31)
     }
-    pub fn set_ne(&mut self, ne: bool) -> &mut Self {
-        self.bits.set_bit(31, ne);
-        self
-    }
+
+}
+/// See [`TlbIdx::index()`]
+pub fn set_index(index: usize) {
+    set_csr_loong_bits!(0x10, 0..16, index);
+}
+
+/// See [`TlbIdx::ps()`]
+pub fn set_ps(ps: usize) {
+    set_csr_loong_bits!(0x10, 24..=29, ps);
+}
+
+/// See [`TlbIdx::ne()`]
+pub fn set_ne(ne: bool) {
+    set_csr_loong_bit!(0x10, 31, ne);
 }

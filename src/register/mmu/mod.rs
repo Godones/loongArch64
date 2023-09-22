@@ -1,7 +1,6 @@
-#![allow(unused)]
+
 pub mod tlbidx;
 pub mod tlbehi;
-pub mod tlbelo;
 pub mod asid;
 pub mod pgdl;
 pub mod pgdh;
@@ -19,7 +18,6 @@ pub mod tlbrelo0;
 pub mod tlbrelo1;
 pub mod tlbrehi;
 pub mod tlbrprmd;
-pub mod dmw;
 pub mod dmw0;
 pub mod dmw1;
 pub mod dmw2;

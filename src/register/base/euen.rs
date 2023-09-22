@@ -1,40 +1,61 @@
-
 use bit_field::BitField;
-impl_define_csr!(Euen);
+impl_define_csr!(Euen,"Extended Component Unit Enable (EUEN)
+
+In addition to the base integer instruction set and the privileged instruction set,
+the base floating-point instruction set,
+the binary translation extension instruction set,
+the 128-bit vector extension instruction set,
+and the 256-bit vector extension instruction set each have software-configurable enable bits.
+
+When these enable controls are disabled, execution of the corresponding instruction will trigger the corresponding instruction unavailable exception.
+
+Software uses this mechanism to determine the scope when saving the context.
+
+Hardware implementations can also use the control bits here to implement circuit power control.
+");
 
 
+impl_read_csr!(0x2,Euen);
 impl Euen{
-    pub fn bits(&self) -> usize {
-        self.bits
-    }
+    #[doc = "The base floating-point instruction enable bit.
+If disabled, execution of the base floating-point instruction will trigger a floating-point instruction disable exception (FPD)."]
     pub fn fpe(& self,) ->bool {
         self.bits.get_bit(0)
     }
-    pub fn set_fpe(&mut self, fpe: bool) -> &mut Self {
-        self.bits.set_bit(0, fpe);
-        self
-    }
+
+    #[doc = "The base SIMD extension instruction enable bit.
+If disabled, execution of the SIMD instruction will trigger an SIMD extension instruction disable exception (SXD)."]
     pub fn sxe(& self,) ->bool {
         self.bits.get_bit(1)
     }
-    pub fn set_sxe(&mut self, sxe: bool) -> &mut Self {
-        self.bits.set_bit(1, sxe);
-        self
-    }
+    #[doc = "The Advanced SIMD extension instruction enable bit.
+If disabled, execution of the Advanced SIMD instruction will trigger an Advanced SIMD extension instruction disable exception (ASXD)."]
     pub fn asxe(& self,) ->bool {
         self.bits.get_bit(2)
     }
-    pub fn set_asxe(&mut self, asxe: bool) -> &mut Self {
-        self.bits.set_bit(2, asxe);
-        self
-    }
+    #[doc = "The Binary Translation extension instruction enable bit.
+If disabled, execution of the Binary Translation instruction will trigger an Binary Translation extension instruction disable exception (BTD)."]
     pub fn bte(& self,) ->bool {
         self.bits.get_bit(3)
     }
-    pub fn set_bte(&mut self, bte: bool) -> &mut Self {
-        self.bits.set_bit(3, bte);
-        self
-    }
 }
-impl_write_csr!(0x2,Euen);
-impl_read_csr!(0x2,Euen);
+
+
+/// Set the base floating-point instruction enable bit.
+pub fn set_fpe(fpe: bool){
+    set_csr_loong_bit!(0x2,0,fpe);
+}
+
+/// Set the base SIMD extension instruction enable bit.
+pub fn set_sxe(sxe: bool){
+    set_csr_loong_bit!(0x2,1,sxe);
+}
+
+/// Set the Advanced SIMD extension instruction enable bit.
+pub fn set_asxe(asxe: bool){
+    set_csr_loong_bit!(0x2,2,asxe);
+}
+
+pub fn set_bte(bte: bool){
+    set_csr_loong_bit!(0x2,3,bte);
+}

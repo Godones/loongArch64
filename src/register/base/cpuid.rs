@@ -1,10 +1,14 @@
+impl_define_csr!(
+    CpuId,
+    "This register contains the processor core number information."
+);
 
-impl_define_csr!(Cpuid);
-impl_read_csr!(0x20,Cpuid);
+impl_read_csr!(0x20,CpuId);
 
 
 
-impl Cpuid {
+impl CpuId {
+    /// Returns the core id
     pub fn core_id(&self) -> usize {
         self.bits
     }

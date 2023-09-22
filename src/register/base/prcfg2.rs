@@ -1,11 +1,12 @@
 
-impl_define_csr!(Prcfg2);
+impl_define_csr!(Prcfg2, "Privileged Resource Configuration 1");
 impl_read_csr!(0x22,Prcfg2);
 
 
-// 指示 TLB 能够支持的页大小（Page Size）。当第 i 位为 1，表明支持 2
-// i字节大小的页
 impl Prcfg2 {
+    /// Return a bit vector of page sizes supported by the TLB.
+    ///
+    /// If the bit is 1, the 2^(i) page size is supported.
     pub fn psval(&self) -> usize {
         self.bits
     }

@@ -1,19 +1,10 @@
-
 use core::arch::asm;
 use bit_field::BitField;
-
-#[derive(Debug, Clone, Copy)]
-pub enum CpuMode {
-    User = 3,
-    Supervisor = 0,
-}
-
 pub struct CPUCFG {
     bits: usize,
 }
 
 impl CPUCFG {
-    // 读取index对应字的内容
     pub fn read(index: usize) -> Self {
         let mut bits;
         unsafe {
@@ -28,14 +19,24 @@ impl CPUCFG {
         self.bits.get_bits(start..=end)
     }
 }
+/// 获取处理器标识
+pub fn get_prid() -> usize {
+    let cfg = CPUCFG::read(0);
+    cfg.get_bits(0, 31)
+}
 
-// 获取支持的物理地址位数
+/// 获取架构信息
+pub fn get_arch() -> usize {
+    let cfg = CPUCFG::read(1);
+    cfg.get_bits(0, 1)
+}
+/// 获取支持的物理地址位数
 pub fn get_palen() -> usize {
     let cfg = CPUCFG::read(1);
     cfg.get_bits(4, 11) + 1
 }
 
-//获取支持的虚拟地址位数
+/// 获取支持的虚拟地址位数
 pub fn get_valen() -> usize {
     let cfg = CPUCFG::read(1);
     cfg.get_bits(12, 19) + 1
@@ -45,6 +46,19 @@ pub fn get_mmu_support_page() -> bool {
     let cfg = CPUCFG::read(1);
     cfg.get_bit(2)
 }
+
+
+pub fn get_support_iocsr() -> bool {
+    let cfg = CPUCFG::read(1);
+    cfg.get_bit(3)
+}
+
+/// 是否支持非对齐访存
+pub fn get_ual() -> bool {
+    let cfg = CPUCFG::read(1);
+    cfg.get_bit(20)
+}
+
 pub fn get_support_read_forbid() -> bool {
     let cfg = CPUCFG::read(1);
     cfg.get_bit(21)
@@ -56,6 +70,10 @@ pub fn get_support_execution_protection() -> bool {
 pub fn get_support_rplv() -> bool {
     let cfg = CPUCFG::read(1);
     cfg.get_bit(23)
+}
+pub fn get_support_huge_page() -> bool {
+    let cfg = CPUCFG::read(1);
+    cfg.get_bit(24)
 }
 pub fn get_support_rva() -> bool {
     let cfg = CPUCFG::read(3);
@@ -70,31 +88,3 @@ pub fn get_support_lspw() -> bool {
     cfg.get_bit(21)
 }
 
-pub struct Time {}
-
-impl Time {
-    pub fn read() -> usize {
-        let mut counter: usize;
-        unsafe {
-            asm!(
-            "rdtime.d {},{}",
-            out(reg)counter,
-            out(reg)_,
-            );
-        }
-        counter
-    }
-}
-
-pub fn get_timer_freq() -> usize {
-    // 获取时钟晶振频率
-    // 配置信息字index:4
-    let base_freq = CPUCFG::read(4).get_bits(0, 31);
-    // 获取时钟倍频因子
-    // 配置信息字index:5 位:0-15
-    let mul = CPUCFG::read(5).get_bits(0, 15);
-    let div = CPUCFG::read(5).get_bits(16, 31);
-    // 计算时钟频率
-    let cc_freq = base_freq * mul / div;
-    cc_freq
-}

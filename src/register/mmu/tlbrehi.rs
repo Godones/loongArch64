@@ -1,15 +1,33 @@
-// 无论 CSR.TLBRERA.IsTLBR 等于何值，执行 TLBRD 指令都只更新 TLBEHI 寄存器
-
+use core::fmt::Debug;
 use bit_field::BitField;
-impl_define_csr!(TlbREhi);
+use crate::VALEN;
+
 impl_read_csr!(0x8e,TlbREhi);
-impl_write_csr!(0x8e,TlbREhi);
+impl_define_csr!(TlbREhi,"
+When in the TLB refill exception context (`CSR.TLBRERA.IsTLBR`=1),
+the `TLBREHI` register stores the information related to the physical page number of the low-order bits of the TLB table entry,
+so as to during executing TLB-related instructions, etc.
+The format of the `TLBREHI` register and the meaning of each field are the same as the `TLBEHI` register.
 
+However, the `TLBREHI` register is not an exact replica of the `TLBEHI` register in the case of `CSR.TLBRERA.IsTLBR`=1. This is reflected in:
 
+* Regardless of the value of CSR.TLBRERA.IsTLBR equals, the execution of the TLBRD instruction updates only the TLBEHI register.
+
+");
+
+impl Debug for TlbREhi {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("TLBREHi")
+            .field("pg_size", &self.ps())
+            .field("vppn_head", &format_args!("{:#X}", self.vppn() * 2))
+            .finish()
+    }
+}
 
 impl TlbREhi {
-    // TLB 重填例外专用的页大小值。即在 CSR.TLBRERA.IsTLBR=1 时，执行 TLBWR 和 TLBFILL
-    // 指令，写入的 TLB 表项的 PS 域的值来自于此。
+    /// Page size specified for `TLB` refill exception.
+    /// That is, if `CSR.TLBRERA.IsTLBR`=1,
+    /// `TLBWR` or `TLBFILL` instructions write this `PS` field into the TLB entry.
     pub fn ps(&self) -> usize {
         self.bits.get_bits(0..=5)
     }
@@ -17,11 +35,22 @@ impl TlbREhi {
         self.bits.set_bits(0..=5, page_size);
         self
     }
-    pub fn vppn(&self, valen: usize) -> usize {
-        self.bits.get_bits(13..valen)
+    /// When CSR.TLBRERA.IsTLBR=1, the value of VPPN used for querying TLB when executing TLBSRCH instruction,
+    /// and the value of VPPN field of TLB table entry written when executing TLBWR and TLBFILL instructions come from here.
+    /// When a TLB refill exception is triggered, the [VALEN-1:13] bits of the virtual address that triggered the exception are recorded here.
+    pub fn vppn(&self) -> usize {
+        self.bits.get_bits(13..VALEN)
     }
-    pub fn set_vppn(&mut self, valen: usize, vppn: usize) -> &mut Self {
-        self.bits.set_bits(13..valen, vppn);
-        self
-    }
+
+}
+
+/// Set the page size used by `TLBWR` & `TLBFILL` when `CSR.TLBRERA.IsTLBR`=1.
+pub fn set_ps(ps: usize) {
+    set_csr_loong_bits!(0x8e, 0..=5, ps);
+}
+
+/// Set the `VPPN` used by `TLBSRCH`, `TLBWR` & `TLBFILL` when `CSR.TLBRERA.IsTLBR`=1.
+
+pub fn set_vppn(vppn: usize) {
+    set_csr_loong_bits!(0x8e, 13..VALEN, vppn);
 }

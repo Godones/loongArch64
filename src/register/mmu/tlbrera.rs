@@ -1,31 +1,51 @@
-// 该寄存器保存 TLB 重填例外处理完毕之后的返回地址。除此之外，该寄存器还包含用于标识当前例外
-// 是 TLB 重填例外的标志位
-
+use core::fmt::Debug;
 use bit_field::BitField;
-impl_define_csr!(TlbREra);
-impl_read_csr!(0x8a,TlbREra);
-impl_write_csr!(0x8a,TlbREra);
+impl_define_csr!(TlbREra,"TLB Refill Exception Return Address,\n\
+                          This register is used to record the PC of the instruction that triggered the TLB refill exception.\n\
+                          In addition, this register contains flag bits to identify the current exception as a TLB refill exception.");
 
+impl_read_csr!(0x8a,TlbREra);
 
 impl TlbREra {
-    // 记录触发 TLB 重填例外的指令的 PC 的[GRLEN-1:2]位。当执行 ERTN 指令从 TLB 重填
-    // 例外处理程序返回时（此时本寄存器 IsTLBR=1 且 CSR.ERRCTL.IsMERR=0），硬件自动
-    // 将存放在此处的值最低位补上两比特 0 后作为最终的返回地址
+    /// Record the [GRLEN-1:2] bits of the PC of the instruction that triggered the TLB refill exception.
+    /// When the execution of ERTN instruction returns from the TLB refill exception handler.
+    /// (at this time, this register IsTLBR=1 and CSR.MERRCTL.IsMERR=0)
     pub fn pc(&self) -> usize {
         // 返回pc
         self.bits.get_bits(2..)
     }
-    pub fn set_pc(&mut self, pc: usize) -> &mut Self {
-        // 设置pc
-        self.bits.set_bits(2.., pc);
-        self
-    }
+    /// 1 indicates that it is currently in the context of TLB refill exception processing.
+    /// The hardware sets this bit to 1 when a TLB refill exception is triggered.
+    /// When this bit is 1, execution of the ERTN instruction will clear it to 0 only if CSR.MERRCTL.IsMERR=0, otherwise it remains unchanged.
+    /// Because the architecture defines a separate set of CSRs for TLB refill exceptions, when this bit is 1.
+    /// * When ERTN returns, the information used to recover CSR.CRMD will come from CSR.TLBRPRMD;
+    /// * ERTN return address will come from CSR.TLBRERA;
+    /// * The table entries to be written by TLBWR and TLBFILL instructions will come from CSR.TLBREHI, CSR.TLBELO0 and CSR.TLBELO1;
+    /// * TLBSRCH instruction queries information from CSR.TLBREHI;
+    /// * The bad virtual address required for LDDIR and LDPTE instruction execution will come from CSR.TLBRBADV.
     pub fn is_tlbr(&self) -> bool {
-        // 返回是否是 TLB 重填例外
         self.bits.get_bit(0)
     }
-    pub fn set_is_tlbr(&mut self, is_tlbr: bool) -> &mut Self {
-        self.bits.set_bit(0, is_tlbr);
-        self
+}
+impl Debug for TlbREra {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("TLBRERA")
+            .field("pc", &format_args!("{:X}", self.pc()))
+            .field("is_tlbr", &self.is_tlbr())
+            .finish()
     }
 }
+
+/// Set the TLB refill exception flag bit.
+/// See also: [TlbREra::is_tlbr]
+pub fn set_is_tlbr(is_tlbr: bool) {
+    set_csr_loong_bit!(0x8a, 0, is_tlbr);
+}
+
+/// Set the PC of the instruction that triggered the TLB refill exception.
+///
+/// See also: [TlbREra::pc]
+pub fn set_pc(pc: usize) {
+    set_csr_loong_bits!(0x8a, 2.., pc);
+}
+

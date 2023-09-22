@@ -1,4 +1,3 @@
-#![allow(unused)]
 pub mod tcfg;
 pub mod tid;
 pub mod tval;
