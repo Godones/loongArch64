@@ -46,7 +46,7 @@ impl Tcfg {
 /// the timer will perform countdown self decrement and set up the timing interrupt signal when it decrements to 0 value.
 
 pub fn set_en(enable: bool) {
-    set_csr_loong_bit!(0x41, 0, !enable);
+    set_csr_loong_bit!(0x41, 0, enable);
 }
 /// If this bit is 1, when the timer decreases to 0,
 /// the timer will set up the timer interrupt signal and reload the timer to the initial value configured in the TimeVal field,
