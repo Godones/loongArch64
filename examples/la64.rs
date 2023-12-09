@@ -1,5 +1,5 @@
-use loongArch64::register;
-use loongArch64::register::MemoryAccessType;
+use loongarch64::register;
+use loongarch64::register::MemoryAccessType;
 
 fn main() {
     let crmd = register::crmd::read();

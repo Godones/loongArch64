@@ -1,5 +1,5 @@
 [package]
-name = "loongArch64"
+name = "loongarch64"
 version = "0.2.2"
 edition = "2021"
 description = "loongArch64 support for Rust"
@@ -7,7 +7,7 @@ license = "MIT"
 authors = ["chenlinfeng"]
 readme = "README.md"
 repository = "https://github.com/Godones/loongArch64"
-keywords = ["loongarch64","la64"]
+keywords = ["loongarch64", "la64"]
 documentation = "https://docs.rs/loongArch64"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
