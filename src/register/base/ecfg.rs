@@ -1,3 +1,4 @@
+use core::fmt::Debug;
 use super::estat::Interrupt;
 use bit_field::BitField;
 use bitflags::bitflags;
@@ -49,6 +50,15 @@ impl Ecfg {
     /// the entry of both exceptions is not affected by the `VS` field.
     pub fn vs(&self) -> usize {
         self.bits.get_bits(16..19)
+    }
+}
+
+impl Debug for Ecfg {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("ECFG")
+            .field("lie", &self.lie())
+            .field("vs", &self.vs())
+            .finish()
     }
 }
 
