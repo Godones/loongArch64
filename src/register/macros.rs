@@ -61,22 +61,22 @@ macro_rules! impl_tlbelo {
 macro_rules! impl_dwm {
     ($ident:ident,$number:expr) => {
         impl $ident {
-            fn plv0(&self) -> bool {
+            pub fn plv0(&self) -> bool {
                 self.bits.get_bit(0)
             }
-            fn plv1(&self) -> bool {
+            pub fn plv1(&self) -> bool {
                 self.bits.get_bit(1)
             }
-            fn plv2(&self) -> bool {
+            pub fn plv2(&self) -> bool {
                 self.bits.get_bit(2)
             }
-            fn plv3(&self) -> bool {
+            pub fn plv3(&self) -> bool {
                 self.bits.get_bit(3)
             }
-            fn mat(&self) -> MemoryAccessType {
+            pub fn mat(&self) -> MemoryAccessType {
                 self.bits.get_bits(4..=5).into()
             }
-            fn vseg(&self) -> usize {
+            pub fn vseg(&self) -> usize {
                 self.bits.get_bits(60..=63)
             }
         }
@@ -133,6 +133,12 @@ macro_rules! impl_define_csr {
         #[derive(Copy, Clone)]
         pub struct $csr_ident {
             bits: usize,
+        }
+
+        impl $csr_ident {
+            pub fn raw(&self) -> usize {
+                self.bits
+            }
         }
     };
 }
