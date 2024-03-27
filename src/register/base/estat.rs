@@ -65,8 +65,8 @@ impl Estat {
             0x7 => Trap::Exception(Exception::PagePrivilegeIllegal), //页特权级不合规
             0x8 => {
                 match sub_ecode {
-                    0x1 => Trap::Exception(Exception::FetchInstructionAddressError), //取指地址错误
-                    0x2 => Trap::Exception(Exception::MemoryAccessAddressError), //访存地址访问错误
+                    0x0 => Trap::Exception(Exception::FetchInstructionAddressError), //取指地址错误
+                    0x1 => Trap::Exception(Exception::MemoryAccessAddressError), //访存地址访问错误
                     _ => Trap::Unknown,
                 }
             }

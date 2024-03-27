@@ -43,14 +43,14 @@ impl Pwcl {
         self.bits.get_bits(25..=29)
     }
 
-    /// Get the length of each page table entry in the memory. 0 - 64 bit; 1 - 128 bit; 2 - 192 bit; 3 - 256 bit.
+    /// Get the length of each page table entry in the memory. 0 - 64 bit; 1 - 128 bit; 2 - 256 bit; 3 - 512 bit.
     pub fn pte_width(&self) -> usize {
         let val = self.bits.get_bits(30..=31);
         match val {
             0 => 64 / 8,
             1 => 128 / 8,
-            2 => 192 / 8,
-            3 => 256 / 8,
+            2 => 256 / 8,
+            3 => 512 / 8,
             _ => panic!("invalid pte_width"),
         }
     }
