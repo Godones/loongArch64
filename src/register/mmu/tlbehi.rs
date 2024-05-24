@@ -15,7 +15,7 @@ impl TlbEhi {
 
 * When `CSR.TLBRERA.IsTLBR`=0, the VPPN value used to query `TLB` when executing `TLBSRCH` instruction and the value of VPPN field written to `TLB` table entry when executing `TLBWR` and `TLBFILL` instructions come from here.
 
-* When the page invalid exception for load operation, page invalid exception for store operation, page invalid exception for fetch operation, page modification exception, page non-readable exception, page non-executable exception, and page privilege level ilegal exception are triggered, the [31:13] bits of the virual address that triggered the exception are recorded here.
+* When the page invalid exception for load operation, page invalid exception for store operation, page invalid exception for fetch operation, page modification exception, page non-readable exception, page non-executable exception, and page privilege level ilegal exception are triggered, the 31:13 bits of the virual address that triggered the exception are recorded here.
 "]
 
     pub fn vppn(&self) -> usize {
@@ -26,7 +26,7 @@ impl TlbEhi {
 
 * When `CSR.TLBRERA.IsTLBR`=0, the VPPN value used to query `TLB` when executing `TLBSRCH` instruction and the value of VPPN field written to `TLB` table entry when executing `TLBWR` and `TLBFILL` instructions come from here.
 
-* When the page invalid exception for load operation, page invalid exception for store operation, page invalid exception for fetch operation, page modification exception, page non-readable exception, page non-executable exception, and page privilege level ilegal exception are triggered, the [31:13] bits of the virual address that triggered the exception are recorded here.
+* When the page invalid exception for load operation, page invalid exception for store operation, page invalid exception for fetch operation, page modification exception, page non-readable exception, page non-executable exception, and page privilege level ilegal exception are triggered, the 31:13 bits of the virual address that triggered the exception are recorded here.
 "]
 
 pub fn set_vppn(_valen: usize, vppn: usize) {
