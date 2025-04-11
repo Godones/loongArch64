@@ -140,6 +140,12 @@ macro_rules! impl_define_csr {
                 self.bits
             }
         }
+
+        impl From<usize> for $csr_ident {
+            fn from(bits: usize) -> Self {
+                $csr_ident { bits }
+            }
+        }
     };
 }
 
