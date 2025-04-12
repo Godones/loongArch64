@@ -12,6 +12,6 @@ documentation = "https://docs.rs/loongArch64"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 bit_field = "0.10"
-bitflags = "1"
+bitflags = "2.9.0"
 
 [dev-dependencies]

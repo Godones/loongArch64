@@ -1,12 +1,13 @@
-use core::fmt::Debug;
 use super::estat::Interrupt;
 use bit_field::BitField;
 use bitflags::bitflags;
+use core::fmt::Debug;
 impl_define_csr!(Ecfg,"Exception Configuration (ECFG)
 This register is used to control the entry calculation method of exceptions and interrupts and the local enable bit of each interrupt.");
 
 impl_read_csr!(0x4, Ecfg);
 bitflags! {
+    #[derive(Debug,Copy,Clone)]
     pub struct LineBasedInterrupt:usize {
         ///Software Interrupt 0
         const SWI0=1<<Interrupt::SWI0 as usize;
