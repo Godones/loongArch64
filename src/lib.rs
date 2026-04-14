@@ -1,6 +1,6 @@
 #![no_std]
-#![feature(asm_const)]
 #![allow(unused)]
+#![allow(non_snake_case)]
 pub mod asm;
 pub mod consts;
 pub mod cpu;

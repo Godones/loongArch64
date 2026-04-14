@@ -1,5 +1,5 @@
-use crate::register::MemoryAccessType;
 use crate::PALEN;
+use crate::register::MemoryAccessType;
 use bit_field::BitField;
 use core::fmt;
 use core::fmt::Display;

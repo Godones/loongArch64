@@ -1,9 +1,12 @@
 use bit_field::BitField;
-impl_define_csr!(MerrCtl, "Machine Error Controller\n\
+impl_define_csr!(
+    MerrCtl,
+    "Machine Error Controller\n\
                            Since the timing of machine error exceptions cannot be predicted and controlled by the software,\n\
                            a separate set of CSRs is defined for machine error exceptions to preserve other registers when machine error exceptions are triggered,\n\
                            which is used by the system software to save and restore other sites.\n\
-                           This set of independent CSRs except MERRERA and MERRSAVE, the rest are concentrated in MERRCTL register.");
+                           This set of independent CSRs except MERRERA and MERRSAVE, the rest are concentrated in MERRCTL register."
+);
 
 impl_read_csr!(0x90, MerrCtl);
 

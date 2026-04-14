@@ -1,8 +1,11 @@
 use bit_field::BitField;
 use core::fmt::Debug;
-impl_define_csr!(TlbREra,"TLB Refill Exception Return Address,\n\
+impl_define_csr!(
+    TlbREra,
+    "TLB Refill Exception Return Address,\n\
                           This register is used to record the PC of the instruction that triggered the TLB refill exception.\n\
-                          In addition, this register contains flag bits to identify the current exception as a TLB refill exception.");
+                          In addition, this register contains flag bits to identify the current exception as a TLB refill exception."
+);
 
 impl_read_csr!(0x8a, TlbREra);
 

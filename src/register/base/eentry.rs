@@ -1,6 +1,9 @@
 use bit_field::BitField;
-impl_define_csr!(Eentry, "Exception Entry Base Address CSR\n\
-                          This register is used to configure the entry base address for general exceptions and interrupts.");
+impl_define_csr!(
+    Eentry,
+    "Exception Entry Base Address CSR\n\
+                          This register is used to configure the entry base address for general exceptions and interrupts."
+);
 
 impl_read_csr!(0xc, Eentry);
 

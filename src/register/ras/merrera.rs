@@ -1,5 +1,8 @@
-impl_define_csr!(MerrEra,"Machine Error Exception Data Save Register\n\
-                          This register is used to record the PC of the instruction that triggered the machine error exception.");
+impl_define_csr!(
+    MerrEra,
+    "Machine Error Exception Data Save Register\n\
+                          This register is used to record the PC of the instruction that triggered the machine error exception."
+);
 impl_read_csr!(0x94, MerrEra);
 
 impl MerrEra {

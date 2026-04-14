@@ -1,7 +1,10 @@
 use bit_field::BitField;
 use core::fmt::Debug;
-impl_define_csr!(Rvacfg, "Reduced Virtual Address Configuration\n\
-                          This register is used to control the length of the address being reduced in the virtual address reduction mode.");
+impl_define_csr!(
+    Rvacfg,
+    "Reduced Virtual Address Configuration\n\
+                          This register is used to control the length of the address being reduced in the virtual address reduction mode."
+);
 impl_read_csr!(0x1f, Rvacfg);
 impl Rvacfg {
     /// The number of the high order bits of the address to be reduced in the virtual address reduction mode.

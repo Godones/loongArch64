@@ -1,10 +1,13 @@
 use bit_field::BitField;
 use core::fmt::Debug;
 
-impl_define_csr!(Tcfg, "Timer Configuration\n\
+impl_define_csr!(
+    Tcfg,
+    "Timer Configuration\n\
                         This register is the interface to the software configuration timer.\n\
                         The number of valid bits of the timer is determined by the implementation,\n\
-                        so the length of the TimeVal field in this register will change accordingly.");
+                        so the length of the TimeVal field in this register will change accordingly."
+);
 impl_read_csr!(0x41, Tcfg);
 
 impl Debug for Tcfg {

@@ -1,5 +1,5 @@
-use crate::register::MemoryAccessType;
 use crate::PALEN;
+use crate::register::MemoryAccessType;
 use bit_field::BitField;
 impl_read_csr!(0x8d, TlbRElo1);
 
